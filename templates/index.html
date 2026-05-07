@@ -5,30 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bug Prediction System</title>
     <link rel="stylesheet" href="/static/style.css" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐞</text></svg>">
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐞</text></svg>"
+    />
   </head>
   <body>
     <div class="container">
       <header class="header">
         <h1>Bug Prediction System</h1>
-        <p>AI-powered bug severity prediction and categorization for developers and QA teams</p>
+        <p>
+          AI-powered bug severity prediction and categorization for developers
+          and QA teams
+        </p>
       </header>
 
       <div class="top-actions">
         <a href="/history" class="btn secondary">📋 View Full History</a>
-        <button type="button" id="clear-history-top" class="btn secondary">🗑️ Clear History</button>
-        <button type="button" id="theme-toggle" class="theme-toggle" title="Toggle dark mode">
+        <button type="button" id="clear-history-top" class="btn secondary">
+          🗑️ Clear History
+        </button>
+        <button
+          type="button"
+          id="theme-toggle"
+          class="theme-toggle"
+          title="Toggle dark mode"
+        >
           🌙
         </button>
       </div>
 
       <div class="panel quick-input-panel">
         <h2>⚡ Quick Bug Input</h2>
-        <p>Paste a short description and click <strong>Auto Fill Form</strong>. The form will try to detect domain, tech stack, environment, role, root cause, and error code automatically.</p>
-        <textarea id="quick_input" placeholder="e.g. Production Node.js API bug causing 401 errors for Backend Developer" rows="3"></textarea>
+        <p>
+          Paste a short bug report or field list and click
+          <strong>Auto Fill Form</strong>. It supports free text and the
+          key/value format shown in your example.
+        </p>
+        <textarea
+          id="quick_input"
+          placeholder='e.g. title: "Minor CSS styling inconsistency in navigation menu", description: "The navigation menu items have slight spacing issues on mobile devices, affecting visual layout but not functionality.", explanation: "Users may notice the menu looks slightly off but can still navigate normally.", error_code: 200, bug_domain: "Web Development", tech_stack: "Vue", environment: "Development", developer_role: "Frontend Developer", root_cause: "Misconfiguration or logic issue related to ui bug"'
+          rows="3"
+        ></textarea>
         <div class="quick-actions">
-          <button type="button" class="btn secondary" id="auto-fill-button">Auto Fill Form</button>
-          <button type="button" class="btn secondary" id="clear-quick-input">Clear Input</button>
+          <button type="button" class="btn secondary" id="auto-fill-button">
+            Auto Fill Form
+          </button>
+          <button type="button" class="btn secondary" id="clear-quick-input">
+            Clear Input
+          </button>
         </div>
       </div>
 
@@ -37,22 +62,43 @@
         <form action="/predict" method="post">
           <div class="form-group">
             <label for="title">Bug Title</label>
-            <input type="text" id="title" name="title" placeholder="Brief description of the bug" required />
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="Brief description of the bug"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="description">Bug Description</label>
-            <textarea id="description" name="description" placeholder="Detailed description of what happened, steps to reproduce, expected vs actual behavior" required></textarea>
+            <textarea
+              id="description"
+              name="description"
+              placeholder="Detailed description of what happened, steps to reproduce, expected vs actual behavior"
+              required
+            ></textarea>
           </div>
 
           <div class="form-group">
             <label for="explanation">Explanation / Logs</label>
-            <textarea id="explanation" name="explanation" placeholder="Error messages, stack traces, or additional context"></textarea>
+            <textarea
+              id="explanation"
+              name="explanation"
+              placeholder="Error messages, stack traces, or additional context"
+            ></textarea>
           </div>
 
           <div class="form-group">
             <label for="error_code">Error Code</label>
-            <input type="number" id="error_code" name="error_code" placeholder="HTTP status code or error number" required />
+            <input
+              type="number"
+              id="error_code"
+              name="error_code"
+              placeholder="HTTP status code or error number"
+              required
+            />
           </div>
 
           <div class="form-group">
@@ -105,72 +151,96 @@
             </select>
           </div>
 
-          <button type="submit" class="btn">
-            🔍 Predict Bug Severity
-          </button>
+          <button type="submit" class="btn">🔍 Predict Bug Severity</button>
         </form>
       </div>
 
       <div class="panel">
         <h2>📋 Sample Bug Templates</h2>
         <div class="sample-buttons">
-          <button type="button" class="sample-btn" data-sample="low" data-severity="low">
+          <button
+            type="button"
+            class="sample-btn"
+            data-sample="low"
+            data-severity="low"
+          >
             <strong>Low Severity:</strong> Minor UI alignment issue
           </button>
-          <button type="button" class="sample-btn" data-sample="medium" data-severity="medium">
+          <button
+            type="button"
+            class="sample-btn"
+            data-sample="medium"
+            data-severity="medium"
+          >
             <strong>Medium Severity:</strong> API response delay
           </button>
-          <button type="button" class="sample-btn" data-sample="high" data-severity="high">
+          <button
+            type="button"
+            class="sample-btn"
+            data-sample="high"
+            data-severity="high"
+          >
             <strong>High Severity:</strong> Authentication failures
           </button>
-          <button type="button" class="sample-btn" data-sample="critical" data-severity="critical">
+          <button
+            type="button"
+            class="sample-btn"
+            data-sample="critical"
+            data-severity="critical"
+          >
             <strong>Critical Severity:</strong> Data corruption
           </button>
         </div>
         <p class="note">
-          Click a button to autofill the form with an example bug report for testing.
+          Click a button to autofill the form with an example bug report for
+          testing.
         </p>
       </div>
     </div>
 
     <script>
       // Theme toggle functionality
-      const themeToggle = document.getElementById('theme-toggle');
+      const themeToggle = document.getElementById("theme-toggle");
       const body = document.body;
 
       // Check for saved theme preference
-      const savedTheme = localStorage.getItem('theme');
+      const savedTheme = localStorage.getItem("theme");
       if (savedTheme) {
-        body.setAttribute('data-theme', savedTheme);
-        themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        body.setAttribute("data-theme", savedTheme);
+        themeToggle.textContent = savedTheme === "dark" ? "☀️" : "🌙";
       }
 
-      themeToggle.addEventListener('click', () => {
-        const currentTheme = body.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = body.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
 
-        body.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        body.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        themeToggle.textContent = newTheme === "dark" ? "☀️" : "🌙";
       });
 
       // Sample bug data
       const sampleReports = {
         low: {
           title: "Frontend Routing Bug detected in system",
-          description: "This issue relates to a frontend routing bug that occurs in a cloud service built with Azure.",
-          explanation: "Users may see incorrect page navigation, but the service remains available.",
+          description:
+            "This issue relates to a frontend routing bug that occurs in a cloud service built with Azure.",
+          explanation:
+            "Users may see incorrect page navigation, but the service remains available.",
           error_code: 400,
           bug_domain: "Cloud",
           tech_stack: "Azure",
           environment: "Development",
           developer_role: "DevOps Engineer",
-          root_cause: "Misconfiguration or logic issue related to frontend routing bug",
+          root_cause:
+            "Misconfiguration or logic issue related to frontend routing bug",
         },
         medium: {
           title: "API Bug detected in system",
-          description: "The api bug is impacting the data platform and is visible in staging.",
-          explanation: "The API returns inconsistent results under load, affecting staging validation.",
+          description:
+            "The api bug is impacting the data platform and is visible in staging.",
+          explanation:
+            "The API returns inconsistent results under load, affecting staging validation.",
           error_code: 400,
           bug_domain: "Data",
           tech_stack: "MongoDB",
@@ -180,19 +250,24 @@
         },
         high: {
           title: "Cloud Configuration Bug detected in system",
-          description: "A cloud configuration bug has been reported in a Node.js application running on production.",
-          explanation: "Configuration issues are causing service instability for critical users.",
+          description:
+            "A cloud configuration bug has been reported in a Node.js application running on production.",
+          explanation:
+            "Configuration issues are causing service instability for critical users.",
           error_code: 500,
           bug_domain: "Mobile",
           tech_stack: "Node.js",
           environment: "Production",
           developer_role: "Backend Developer",
-          root_cause: "Misconfiguration or logic issue related to cloud configuration bug",
+          root_cause:
+            "Misconfiguration or logic issue related to cloud configuration bug",
         },
         critical: {
           title: "Database Bug detected in system",
-          description: "The database bug is impacting the mobile platform and is visible in production.",
-          explanation: "Data integrity failures are producing incorrect application state for users.",
+          description:
+            "The database bug is impacting the mobile platform and is visible in production.",
+          explanation:
+            "Data integrity failures are producing incorrect application state for users.",
           error_code: 500,
           bug_domain: "Mobile",
           tech_stack: "React",
@@ -207,317 +282,239 @@
         const data = sampleReports[sampleKey];
         if (!data) return;
 
-        document.getElementById('title').value = data.title;
-        document.getElementById('description').value = data.description;
-        document.getElementById('explanation').value = data.explanation;
-        document.getElementById('error_code').value = data.error_code;
-        document.getElementById('bug_domain').value = data.bug_domain;
-        document.getElementById('tech_stack').value = data.tech_stack;
-        document.getElementById('environment').value = data.environment;
-        document.getElementById('developer_role').value = data.developer_role;
-        document.getElementById('root_cause').value = data.root_cause;
+        document.getElementById("title").value = data.title;
+        document.getElementById("description").value = data.description;
+        document.getElementById("explanation").value = data.explanation;
+        document.getElementById("error_code").value = data.error_code;
+        document.getElementById("bug_domain").value = data.bug_domain;
+        document.getElementById("tech_stack").value = data.tech_stack;
+        document.getElementById("environment").value = data.environment;
+        document.getElementById("developer_role").value = data.developer_role;
+        document.getElementById("root_cause").value = data.root_cause;
       }
 
       function normalizeText(value) {
-        return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+        return value
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, " ")
+          .trim();
       }
 
       const quickOptions = {
-        bug_domain: ['Backend Systems', 'Cloud', 'Data', 'DevOps', 'Mobile', 'Web Development'],
-        tech_stack: ['AWS', 'Angular', 'Azure', 'Django', 'Docker', 'Flask', 'GCP', 'Kubernetes', 'Laravel', 'MongoDB', 'MySQL', 'Node.js', 'PostgreSQL', 'React', 'Spring Boot', 'Vue'],
-        environment: ['Development', 'Production', 'Staging'],
-        developer_role: ['Backend Developer', 'Cloud Engineer', 'Data Engineer', 'DevOps Engineer', 'Frontend Developer', 'Full-Stack Developer', 'Mobile Developer', 'QA Engineer', 'Security Engineer'],
-        root_cause: ['Misconfiguration or logic issue related to api bug', 'Misconfiguration or logic issue related to authentication bug', 'Misconfiguration or logic issue related to authorization bug', 'Misconfiguration or logic issue related to backend logic bug', 'Misconfiguration or logic issue related to ci/cd bug', 'Misconfiguration or logic issue related to cloud configuration bug', 'Misconfiguration or logic issue related to concurrency bug', 'Misconfiguration or logic issue related to database bug', 'Misconfiguration or logic issue related to deployment bug', 'Misconfiguration or logic issue related to frontend routing bug', 'Misconfiguration or logic issue related to logging bug', 'Misconfiguration or logic issue related to memory leak', 'Misconfiguration or logic issue related to monitoring bug', 'Misconfiguration or logic issue related to performance bug', 'Misconfiguration or logic issue related to security vulnerability', 'Misconfiguration or logic issue related to ui bug'],
+        bug_domain: [
+          "Backend Systems",
+          "Cloud",
+          "Data",
+          "DevOps",
+          "Mobile",
+          "Web Development",
+        ],
+        tech_stack: [
+          "AWS",
+          "Angular",
+          "Azure",
+          "Django",
+          "Docker",
+          "Flask",
+          "GCP",
+          "Kubernetes",
+          "Laravel",
+          "MongoDB",
+          "MySQL",
+          "Node.js",
+          "PostgreSQL",
+          "React",
+          "Spring Boot",
+          "Vue",
+        ],
+        environment: ["Development", "Production", "Staging"],
+        developer_role: [
+          "Backend Developer",
+          "Cloud Engineer",
+          "Data Engineer",
+          "DevOps Engineer",
+          "Frontend Developer",
+          "Full-Stack Developer",
+          "Mobile Developer",
+          "QA Engineer",
+          "Security Engineer",
+        ],
+        root_cause: [
+          "Misconfiguration or logic issue related to api bug",
+          "Misconfiguration or logic issue related to authentication bug",
+          "Misconfiguration or logic issue related to authorization bug",
+          "Misconfiguration or logic issue related to backend logic bug",
+          "Misconfiguration or logic issue related to ci/cd bug",
+          "Misconfiguration or logic issue related to cloud configuration bug",
+          "Misconfiguration or logic issue related to concurrency bug",
+          "Misconfiguration or logic issue related to database bug",
+          "Misconfiguration or logic issue related to deployment bug",
+          "Misconfiguration or logic issue related to frontend routing bug",
+          "Misconfiguration or logic issue related to logging bug",
+          "Misconfiguration or logic issue related to memory leak",
+          "Misconfiguration or logic issue related to monitoring bug",
+          "Misconfiguration or logic issue related to performance bug",
+          "Misconfiguration or logic issue related to security vulnerability",
+          "Misconfiguration or logic issue related to ui bug",
+        ],
       };
 
       function findQuickMatch(text, options) {
         const normalized = normalizeText(text);
-        const exactMatch = options.find(option => normalized.includes(normalizeText(option)));
+        const exactMatch = options.find((option) =>
+          normalized.includes(normalizeText(option)),
+        );
         if (exactMatch) return exactMatch;
-        return options.find(option => {
+        return options.find((option) => {
           return normalizeText(option)
-            .split(' ')
-            .some(token => token.length > 2 && normalized.includes(token));
+            .split(" ")
+            .some((token) => token.length > 2 && normalized.includes(token));
         });
       }
 
+      function parseKeyValuePairs(text) {
+        const normalized = text.replace(/\r/g, "");
+        const pairs = {};
+        const regex = /([a-zA-Z_]+)\s*:\s*(?:"([^"]*)"|'([^']*)'|([^,\n]+))/g;
+        let match;
+
+        while ((match = regex.exec(normalized)) !== null) {
+          const key = match[1].trim();
+          const value = match[2] ?? match[3] ?? match[4] ?? "";
+          pairs[key] = value.trim().replace(/,$/, "").trim();
+        }
+
+        return pairs;
+      }
+
       function parseQuickInput(text) {
+        const keyValues = parseKeyValuePairs(text);
+        const parsed = {
+          title: text.split(/[\.\n]/)[0].trim() || "Quick bug report",
+          description: text.trim(),
+          explanation: text.trim(),
+          error_code: "",
+          bug_domain: "",
+          tech_stack: "",
+          environment: "",
+          developer_role: "",
+          root_cause: "",
+        };
+
+        if (Object.keys(keyValues).length > 0) {
+          if (keyValues.title) parsed.title = keyValues.title;
+          if (keyValues.description) parsed.description = keyValues.description;
+          if (keyValues.explanation) parsed.explanation = keyValues.explanation;
+          if (keyValues.error_code)
+            parsed.error_code = parseInt(keyValues.error_code, 10) || "";
+          if (keyValues.bug_domain) parsed.bug_domain = keyValues.bug_domain;
+          if (keyValues.tech_stack) parsed.tech_stack = keyValues.tech_stack;
+          if (keyValues.environment) parsed.environment = keyValues.environment;
+          if (keyValues.developer_role)
+            parsed.developer_role = keyValues.developer_role;
+          if (keyValues.root_cause) parsed.root_cause = keyValues.root_cause;
+          return parsed;
+        }
+
         const normalized = normalizeText(text);
         const errorCodeMatch = text.match(/\b(2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/);
         return {
-          title: text.split(/[\.\n]/)[0].trim() || 'Quick bug report',
-          description: text.trim(),
-          explanation: text.trim(),
-          error_code: errorCodeMatch ? parseInt(errorCodeMatch[1], 10) : '',
-          bug_domain: findQuickMatch(normalized, quickOptions.bug_domain) || '',
-          tech_stack: findQuickMatch(normalized, quickOptions.tech_stack) || '',
-          environment: findQuickMatch(normalized, quickOptions.environment) || '',
-          developer_role: findQuickMatch(normalized, quickOptions.developer_role) || '',
-          root_cause: findQuickMatch(normalized, quickOptions.root_cause) || '',
+          title: parsed.title,
+          description: parsed.description,
+          explanation: parsed.explanation,
+          error_code: errorCodeMatch ? parseInt(errorCodeMatch[1], 10) : "",
+          bug_domain: findQuickMatch(normalized, quickOptions.bug_domain) || "",
+          tech_stack: findQuickMatch(normalized, quickOptions.tech_stack) || "",
+          environment:
+            findQuickMatch(normalized, quickOptions.environment) || "",
+          developer_role:
+            findQuickMatch(normalized, quickOptions.developer_role) || "",
+          root_cause: findQuickMatch(normalized, quickOptions.root_cause) || "",
         };
       }
 
       function autoFillFromQuickInput() {
-        const quickInput = document.getElementById('quick_input').value;
+        const quickInput = document.getElementById("quick_input").value;
         if (!quickInput.trim()) {
-          alert('Please paste a quick bug summary first.');
+          alert("Please paste a quick bug summary first.");
           return;
         }
 
         const parsed = parseQuickInput(quickInput);
-        document.getElementById('title').value = parsed.title;
-        document.getElementById('description').value = parsed.description;
-        document.getElementById('explanation').value = parsed.explanation;
-        document.getElementById('error_code').value = parsed.error_code;
-        document.getElementById('bug_domain').value = parsed.bug_domain;
-        document.getElementById('tech_stack').value = parsed.tech_stack;
-        document.getElementById('environment').value = parsed.environment;
-        document.getElementById('developer_role').value = parsed.developer_role;
-        document.getElementById('root_cause').value = parsed.root_cause;
+        document.getElementById("title").value = parsed.title;
+        document.getElementById("description").value = parsed.description;
+        document.getElementById("explanation").value = parsed.explanation;
+        document.getElementById("error_code").value = parsed.error_code;
+        document.getElementById("bug_domain").value = parsed.bug_domain;
+        document.getElementById("tech_stack").value = parsed.tech_stack;
+        document.getElementById("environment").value = parsed.environment;
+        document.getElementById("developer_role").value = parsed.developer_role;
+        document.getElementById("root_cause").value = parsed.root_cause;
       }
 
       function clearQuickInput() {
-        document.getElementById('quick_input').value = '';
+        document.getElementById("quick_input").value = "";
       }
 
       // Add click handlers to sample buttons
-      document.querySelectorAll('.sample-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const sample = btn.getAttribute('data-sample');
+      document.querySelectorAll(".sample-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const sample = btn.getAttribute("data-sample");
           fillForm(sample);
         });
       });
 
-      document.getElementById('auto-fill-button').addEventListener('click', autoFillFromQuickInput);
-      document.getElementById('clear-quick-input').addEventListener('click', clearQuickInput);
+      document
+        .getElementById("auto-fill-button")
+        .addEventListener("click", autoFillFromQuickInput);
+      document
+        .getElementById("clear-quick-input")
+        .addEventListener("click", clearQuickInput);
 
       // History management
       function renderHistory() {
         // Implementation remains the same
-        const history = JSON.parse(localStorage.getItem('bugHistory') || '[]');
+        const history = JSON.parse(localStorage.getItem("bugHistory") || "[]");
         // ... existing code ...
       }
 
       function clearHistory() {
-        if (confirm('Are you sure you want to clear all bug report history?')) {
-          localStorage.removeItem('bugHistory');
+        if (confirm("Are you sure you want to clear all bug report history?")) {
+          localStorage.removeItem("bugHistory");
           renderHistory();
         }
       }
 
       // Load selected report from history
       function loadSelectedReport() {
-        const selectedReport = localStorage.getItem('selectedBugReport');
+        const selectedReport = localStorage.getItem("selectedBugReport");
         if (selectedReport) {
           const report = JSON.parse(selectedReport);
-          document.getElementById('title').value = report.title || '';
-          document.getElementById('description').value = report.description || '';
-          document.getElementById('explanation').value = report.explanation || '';
-          document.getElementById('error_code').value = report.error_code || '';
-          document.getElementById('bug_domain').value = report.bug_domain || '';
-          document.getElementById('tech_stack').value = report.tech_stack || '';
-          document.getElementById('environment').value = report.environment || '';
-          document.getElementById('developer_role').value = report.developer_role || '';
-          document.getElementById('root_cause').value = report.root_cause || '';
-          localStorage.removeItem('selectedBugReport');
+          document.getElementById("title").value = report.title || "";
+          document.getElementById("description").value =
+            report.description || "";
+          document.getElementById("explanation").value =
+            report.explanation || "";
+          document.getElementById("error_code").value = report.error_code || "";
+          document.getElementById("bug_domain").value = report.bug_domain || "";
+          document.getElementById("tech_stack").value = report.tech_stack || "";
+          document.getElementById("environment").value =
+            report.environment || "";
+          document.getElementById("developer_role").value =
+            report.developer_role || "";
+          document.getElementById("root_cause").value = report.root_cause || "";
+          localStorage.removeItem("selectedBugReport");
         }
       }
 
       // Event listeners
-      document.getElementById('clear-history-top').addEventListener('click', clearHistory);
+      document
+        .getElementById("clear-history-top")
+        .addEventListener("click", clearHistory);
 
       // Initialize
       renderHistory();
       loadSelectedReport();
-    </script>
-  </body>
-</html>
-
-      <div class="panel history-panel">
-        <div class="history-header">
-          <h2>Bug history</h2>
-          <button type="button" id="clear-history" class="btn small">
-            Clear history
-          </button>
-        </div>
-        <div id="history-list" class="history-list"></div>
-      </div>
-    </div>
-
-    <script>
-      const sampleReports = {
-        low: {
-          title: "Frontend form submit stuck on loading",
-          description:
-            "The React form never completes submission and the page stays on the loading spinner.",
-          explanation:
-            "Browser console shows TypeError: Cannot read properties of undefined (reading 'submit').",
-          error_code: 400,
-          bug_domain: "Web Development",
-          tech_stack: "React",
-          environment: "Staging",
-          developer_role: "Frontend Developer",
-          root_cause:
-            "Misconfiguration or logic issue related to frontend routing bug",
-        },
-        medium: {
-          title: "Auth token denied despite valid credentials",
-          description:
-            "API rejects a valid token and returns 401 during auth middleware validation.",
-          explanation:
-            "Auth service log: token validation failed for token issued 5 minutes ago.",
-          error_code: 401,
-          bug_domain: "Cloud",
-          tech_stack: "AWS",
-          environment: "Development",
-          developer_role: "Security Engineer",
-          root_cause:
-            "Misconfiguration or logic issue related to authentication bug",
-        },
-        high: {
-          title: "Cloud Configuration Bug detected in system",
-          description:
-            "The bug affects cloud workflows in the production environment and involves Kubernetes.",
-          explanation:
-            "A Backend Developer should review the root cause and implement a fix.",
-          error_code: 403,
-          bug_domain: "Cloud",
-          tech_stack: "Kubernetes",
-          environment: "Production",
-          developer_role: "Backend Developer",
-          root_cause:
-            "Misconfiguration or logic issue related to cloud configuration bug",
-        },
-        critical: {
-          title: "Kubernetes deployment crashes on startup",
-          description:
-            "New service pod enters CrashLoopBackOff immediately after deployment.",
-          explanation:
-            "Pod log shows missing environment variable and container exit code 1.",
-          error_code: 1,
-          bug_domain: "DevOps",
-          tech_stack: "Kubernetes",
-          environment: "Production",
-          developer_role: "DevOps Engineer",
-          root_cause:
-            "Misconfiguration or logic issue related to deployment bug",
-        },
-      };
-
-      function fillReportInForm(report) {
-        if (!report) return;
-
-        document.querySelector('input[name="title"]').value = report.title;
-        document.querySelector('textarea[name="description"]').value =
-          report.description;
-        document.querySelector('textarea[name="explanation"]').value =
-          report.explanation;
-        document.querySelector('input[name="error_code"]').value =
-          report.error_code;
-        document.querySelector('select[name="bug_domain"]').value =
-          report.bug_domain;
-        document.querySelector('select[name="tech_stack"]').value =
-          report.tech_stack;
-        document.querySelector('select[name="environment"]').value =
-          report.environment;
-        document.querySelector('select[name="developer_role"]').value =
-          report.developer_role;
-        document.querySelector('select[name="root_cause"]').value =
-          report.root_cause;
-      }
-
-      function fillForm(sample) {
-        fillReportInForm(sampleReports[sample]);
-      }
-
-      function loadSelectedReport() {
-        const selected = localStorage.getItem("selectedBugReport");
-        if (!selected) return;
-        const report = JSON.parse(selected);
-        localStorage.removeItem("selectedBugReport");
-        fillReportInForm(report);
-      }
-
-      function renderHistory() {
-        const history = JSON.parse(
-          localStorage.getItem("bugReportHistory") || "[]",
-        );
-        const list = document.getElementById("history-list");
-        list.innerHTML = "";
-
-        if (!history.length) {
-          list.innerHTML =
-            '<p class="muted">No past reports yet. Submit a bug to save it here.</p>';
-          return;
-        }
-
-        history.forEach((item, index) => {
-          const card = document.createElement("div");
-          card.className = "history-item";
-          card.innerHTML = `
-            <div class="history-title">
-                <strong>${item.title}</strong>
-                <span class="history-severity">${item.severity || "Pending"}</span>
-            </div>
-            <p>${item.description}</p>
-            <div class="history-meta">
-                <span>${item.bug_category || "Unknown category"}</span>
-                <span>${item.tech_stack} · ${item.environment}</span>
-                <span>${new Date(item.submitted_at).toLocaleString()}</span>
-            </div>
-            <button type="button" class="btn small" data-load="${index}">Load</button>
-        `;
-          list.appendChild(card);
-        });
-
-        document.querySelectorAll("[data-load]").forEach((button) => {
-          button.addEventListener("click", () => {
-            const idx = parseInt(button.getAttribute("data-load"), 10);
-            const item = history[idx];
-            if (!item) return;
-            document.querySelector('input[name="title"]').value = item.title;
-            document.querySelector('textarea[name="description"]').value =
-              item.description;
-            document.querySelector('textarea[name="explanation"]').value =
-              item.explanation;
-            document.querySelector('input[name="error_code"]').value =
-              item.error_code;
-            document.querySelector('select[name="bug_domain"]').value =
-              item.bug_domain;
-            document.querySelector('select[name="tech_stack"]').value =
-              item.tech_stack;
-            document.querySelector('select[name="environment"]').value =
-              item.environment;
-            document.querySelector('select[name="developer_role"]').value =
-              item.developer_role;
-            document.querySelector('select[name="root_cause"]').value =
-              item.root_cause;
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          });
-        });
-      }
-
-      function clearHistory() {
-        if (!confirm("Clear all saved bug report history?")) return;
-        localStorage.removeItem("bugReportHistory");
-        renderHistory();
-      }
-
-      window.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".sample-btn").forEach((button) => {
-          button.addEventListener("click", () =>
-            fillForm(button.dataset.sample),
-          );
-        });
-        document
-          .getElementById("clear-history")
-          .addEventListener("click", clearHistory);
-        document
-          .getElementById("clear-history-top")
-          .addEventListener("click", clearHistory);
-        loadSelectedReport();
-        renderHistory();
-      });
     </script>
   </body>
 </html>
