@@ -141,18 +141,18 @@
             "Misconfiguration or logic issue related to authentication bug",
         },
         high: {
-          title: "Search service slows under peak load",
+          title: "Cloud Configuration Bug detected in system",
           description:
-            "Search queries take much longer during peak traffic, causing user-facing timeouts and degraded experience.",
+            "The bug affects cloud workflows in the production environment and involves Kubernetes.",
           explanation:
-            "Server logs show elevated latency and intermittent 503 responses during high traffic spikes.",
-          error_code: 503,
-          bug_domain: "Backend Systems",
-          tech_stack: "PostgreSQL",
+            "A Backend Developer should review the root cause and implement a fix.",
+          error_code: 403,
+          bug_domain: "Cloud",
+          tech_stack: "Kubernetes",
           environment: "Production",
           developer_role: "Backend Developer",
           root_cause:
-            "Misconfiguration or logic issue related to performance bug",
+            "Misconfiguration or logic issue related to cloud configuration bug",
         },
         critical: {
           title: "Kubernetes deployment crashes on startup",
