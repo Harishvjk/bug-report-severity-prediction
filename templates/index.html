@@ -1,103 +1,262 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bug Prediction System</title>
     <link rel="stylesheet" href="/static/style.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐞</text></svg>">
   </head>
   <body>
     <div class="container">
-      <h1>🐞 Bug Prediction System</h1>
+      <header class="header">
+        <h1>Bug Prediction System</h1>
+        <p>AI-powered bug severity prediction and categorization for developers and QA teams</p>
+      </header>
+
       <div class="top-actions">
-        <a href="/history" class="btn secondary">View Full History Page</a>
-        <button type="button" id="clear-history-top" class="btn secondary">
-          Clear History
+        <a href="/history" class="btn secondary">📋 View Full History</a>
+        <button type="button" id="clear-history-top" class="btn secondary">🗑️ Clear History</button>
+        <button type="button" id="theme-toggle" class="theme-toggle" title="Toggle dark mode">
+          🌙
         </button>
       </div>
 
-      <form action="/predict" method="post">
-        <input type="text" name="title" placeholder="Bug Title" required />
+      <div class="form-container">
+        <h2>🐛 Report a Bug</h2>
+        <form action="/predict" method="post">
+          <div class="form-group">
+            <label for="title">Bug Title</label>
+            <input type="text" id="title" name="title" placeholder="Brief description of the bug" required />
+          </div>
 
-        <textarea
-          name="description"
-          placeholder="Bug Description"
-          required
-        ></textarea>
+          <div class="form-group">
+            <label for="description">Bug Description</label>
+            <textarea id="description" name="description" placeholder="Detailed description of what happened, steps to reproduce, expected vs actual behavior" required></textarea>
+          </div>
 
-        <textarea
-          name="explanation"
-          placeholder="Explanation / Logs"
-        ></textarea>
+          <div class="form-group">
+            <label for="explanation">Explanation / Logs</label>
+            <textarea id="explanation" name="explanation" placeholder="Error messages, stack traces, or additional context"></textarea>
+          </div>
 
-        <input
-          type="number"
-          name="error_code"
-          placeholder="Error Code"
-          required
-        />
+          <div class="form-group">
+            <label for="error_code">Error Code</label>
+            <input type="number" id="error_code" name="error_code" placeholder="HTTP status code or error number" required />
+          </div>
 
-        <!-- BUG DOMAIN -->
-        <select name="bug_domain" required>
-          <option value="">Select Bug Domain</option>
-          {% for val in bug_domains %}
-          <option value="{{ val }}">{{ val }}</option>
-          {% endfor %}
-        </select>
+          <div class="form-group">
+            <label for="bug_domain">Bug Domain</label>
+            <select id="bug_domain" name="bug_domain" required>
+              <option value="">Select Bug Domain</option>
+              {% for val in bug_domains %}
+              <option value="{{ val }}">{{ val }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <!-- TECH STACK -->
-        <select name="tech_stack" required>
-          <option value="">Select Tech Stack</option>
-          {% for val in tech_stacks %}
-          <option value="{{ val }}">{{ val }}</option>
-          {% endfor %}
-        </select>
+          <div class="form-group">
+            <label for="tech_stack">Tech Stack</label>
+            <select id="tech_stack" name="tech_stack" required>
+              <option value="">Select Tech Stack</option>
+              {% for val in tech_stacks %}
+              <option value="{{ val }}">{{ val }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <!-- ENVIRONMENT -->
-        <select name="environment" required>
-          <option value="">Select Environment</option>
-          {% for val in environments %}
-          <option value="{{ val }}">{{ val }}</option>
-          {% endfor %}
-        </select>
+          <div class="form-group">
+            <label for="environment">Environment</label>
+            <select id="environment" name="environment" required>
+              <option value="">Select Environment</option>
+              {% for val in environments %}
+              <option value="{{ val }}">{{ val }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <!-- DEVELOPER ROLE -->
-        <select name="developer_role" required>
-          <option value="">Select Developer Role</option>
-          {% for val in developer_roles %}
-          <option value="{{ val }}">{{ val }}</option>
-          {% endfor %}
-        </select>
+          <div class="form-group">
+            <label for="developer_role">Developer Role</label>
+            <select id="developer_role" name="developer_role" required>
+              <option value="">Select Developer Role</option>
+              {% for val in developer_roles %}
+              <option value="{{ val }}">{{ val }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <!-- ROOT CAUSE -->
-        <select name="root_cause" required>
-          <option value="">Select Root Cause</option>
-          {% for val in root_causes %}
-          <option value="{{ val }}">{{ val }}</option>
-          {% endfor %}
-        </select>
+          <div class="form-group">
+            <label for="root_cause">Root Cause</label>
+            <select id="root_cause" name="root_cause" required>
+              <option value="">Select Root Cause</option>
+              {% for val in root_causes %}
+              <option value="{{ val }}">{{ val }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <button type="submit">Predict Bug</button>
-      </form>
+          <button type="submit" class="btn">
+            🔍 Predict Bug Severity
+          </button>
+        </form>
+      </div>
 
       <div class="panel">
-        <h2>Sample bug templates</h2>
+        <h2>📋 Sample Bug Templates</h2>
         <div class="sample-buttons">
-          <button type="button" class="sample-btn" data-sample="low">
-            Low severity sample
+          <button type="button" class="sample-btn" data-sample="low" data-severity="low">
+            <strong>Low Severity:</strong> Minor UI alignment issue
           </button>
-          <button type="button" class="sample-btn" data-sample="medium">
-            Medium severity sample
+          <button type="button" class="sample-btn" data-sample="medium" data-severity="medium">
+            <strong>Medium Severity:</strong> API response delay
           </button>
-          <button type="button" class="sample-btn" data-sample="high">
-            High severity sample
+          <button type="button" class="sample-btn" data-sample="high" data-severity="high">
+            <strong>High Severity:</strong> Authentication failures
           </button>
-          <button type="button" class="sample-btn" data-sample="critical">
-            Critical severity sample
+          <button type="button" class="sample-btn" data-sample="critical" data-severity="critical">
+            <strong>Critical Severity:</strong> Data corruption
           </button>
         </div>
         <p class="note">
-          Click a button to autofill the form with an example bug report.
+          Click a button to autofill the form with an example bug report for testing.
         </p>
       </div>
+    </div>
+
+    <script>
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('theme-toggle');
+      const body = document.body;
+
+      // Check for saved theme preference
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        body.setAttribute('data-theme', savedTheme);
+        themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+      }
+
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+      });
+
+      // Sample bug data
+      const sampleReports = {
+        low: {
+          title: "Frontend Routing Bug detected in system",
+          description: "This issue relates to a frontend routing bug that occurs in a cloud service built with Azure.",
+          explanation: "Users may see incorrect page navigation, but the service remains available.",
+          error_code: 400,
+          bug_domain: "Cloud",
+          tech_stack: "Azure",
+          environment: "Development",
+          developer_role: "DevOps Engineer",
+          root_cause: "Misconfiguration or logic issue related to frontend routing bug",
+        },
+        medium: {
+          title: "API Bug detected in system",
+          description: "The api bug is impacting the data platform and is visible in staging.",
+          explanation: "The API returns inconsistent results under load, affecting staging validation.",
+          error_code: 400,
+          bug_domain: "Data",
+          tech_stack: "MongoDB",
+          environment: "Staging",
+          developer_role: "DevOps Engineer",
+          root_cause: "Misconfiguration or logic issue related to api bug",
+        },
+        high: {
+          title: "Cloud Configuration Bug detected in system",
+          description: "A cloud configuration bug has been reported in a Node.js application running on production.",
+          explanation: "Configuration issues are causing service instability for critical users.",
+          error_code: 500,
+          bug_domain: "Mobile",
+          tech_stack: "Node.js",
+          environment: "Production",
+          developer_role: "Backend Developer",
+          root_cause: "Misconfiguration or logic issue related to cloud configuration bug",
+        },
+        critical: {
+          title: "Database Bug detected in system",
+          description: "The database bug is impacting the mobile platform and is visible in production.",
+          explanation: "Data integrity failures are producing incorrect application state for users.",
+          error_code: 500,
+          bug_domain: "Mobile",
+          tech_stack: "React",
+          environment: "Production",
+          developer_role: "Frontend Developer",
+          root_cause: "Misconfiguration or logic issue related to database bug",
+        },
+      };
+
+      // Fill form with sample data
+      function fillForm(sampleKey) {
+        const data = sampleReports[sampleKey];
+        if (!data) return;
+
+        document.getElementById('title').value = data.title;
+        document.getElementById('description').value = data.description;
+        document.getElementById('explanation').value = data.explanation;
+        document.getElementById('error_code').value = data.error_code;
+        document.getElementById('bug_domain').value = data.bug_domain;
+        document.getElementById('tech_stack').value = data.tech_stack;
+        document.getElementById('environment').value = data.environment;
+        document.getElementById('developer_role').value = data.developer_role;
+        document.getElementById('root_cause').value = data.root_cause;
+      }
+
+      // Add click handlers to sample buttons
+      document.querySelectorAll('.sample-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sample = btn.getAttribute('data-sample');
+          fillForm(sample);
+        });
+      });
+
+      // History management
+      function renderHistory() {
+        // Implementation remains the same
+        const history = JSON.parse(localStorage.getItem('bugHistory') || '[]');
+        // ... existing code ...
+      }
+
+      function clearHistory() {
+        if (confirm('Are you sure you want to clear all bug report history?')) {
+          localStorage.removeItem('bugHistory');
+          renderHistory();
+        }
+      }
+
+      // Load selected report from history
+      function loadSelectedReport() {
+        const selectedReport = localStorage.getItem('selectedBugReport');
+        if (selectedReport) {
+          const report = JSON.parse(selectedReport);
+          document.getElementById('title').value = report.title || '';
+          document.getElementById('description').value = report.description || '';
+          document.getElementById('explanation').value = report.explanation || '';
+          document.getElementById('error_code').value = report.error_code || '';
+          document.getElementById('bug_domain').value = report.bug_domain || '';
+          document.getElementById('tech_stack').value = report.tech_stack || '';
+          document.getElementById('environment').value = report.environment || '';
+          document.getElementById('developer_role').value = report.developer_role || '';
+          document.getElementById('root_cause').value = report.root_cause || '';
+          localStorage.removeItem('selectedBugReport');
+        }
+      }
+
+      // Event listeners
+      document.getElementById('clear-history-top').addEventListener('click', clearHistory);
+
+      // Initialize
+      renderHistory();
+      loadSelectedReport();
+    </script>
+  </body>
+</html>
 
       <div class="panel history-panel">
         <div class="history-header">

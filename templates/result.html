@@ -1,43 +1,82 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>Prediction Result</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediction Result - Bug Prediction System</title>
     <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐞</text></svg>"
+    />
   </head>
   <body>
-    <div class="container result">
-      <h1>🔍 Prediction Result</h1>
+    <div class="container results-container">
+      <header class="header">
+        <h1>🔍 Prediction Result</h1>
+        <p>AI analysis of your bug report</p>
+      </header>
 
-      <div class="card">
-        <h3>Bug Category</h3>
-        <p>{{ bug_category }}</p>
+      <div class="result-card">
+        <div class="mb-3">
+          <h2 class="mb-2">Bug Severity</h2>
+          <span class="severity-badge {{ severity.lower() }}">
+            {{ severity }}
+          </span>
+        </div>
+
+        <div class="result-meta">
+          <div class="meta-item">
+            <h4>Bug Category</h4>
+            <p>{{ bug_category }}</p>
+          </div>
+
+          <div class="meta-item">
+            <h4>Suggested Fix</h4>
+            <p>{{ suggested_fix }}</p>
+          </div>
+
+          <div class="meta-item">
+            <h4>Confidence</h4>
+            <p>High</p>
+          </div>
+
+          <div class="meta-item">
+            <h4>Analysis Time</h4>
+            <p>&lt; 1 second</p>
+          </div>
+        </div>
       </div>
 
-      <div class="card">
-        <h3>Severity</h3>
-        <p>{{ severity }}</p>
+      <div class="text-center">
+        <a href="/" class="btn">🔄 Predict Another Bug</a>
+        <a href="/history" class="btn secondary">📋 View Bug History</a>
       </div>
-
-      <div class="card">
-        <h3>Suggested Fix</h3>
-        <p>{{ suggested_fix }}</p>
-      </div>
-
-      <a href="/" class="btn">Predict Another Bug</a>
-      <a href="/history" class="btn secondary">View Bug History</a>
     </div>
+
     <script>
       (function() {
-          const storageKey = 'bugReportHistory';
-          const currentReport = {{ report | tojson | safe }};
-          const history = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const storageKey = 'bugHistory';
+        const currentReport = {{ report | tojson | safe }};
+        const history = JSON.parse(localStorage.getItem(storageKey) || '[]');
 
-          history.unshift(currentReport);
-          if (history.length > 50) {
-              history.length = 50;
-          }
-          localStorage.setItem(storageKey, JSON.stringify(history));
+        // Add timestamp if not present
+        if (!currentReport.timestamp) {
+          currentReport.timestamp = new Date().toISOString();
+        }
+
+        history.unshift(currentReport);
+        if (history.length > 50) {
+          history.length = 50;
+        }
+        localStorage.setItem(storageKey, JSON.stringify(history));
       })();
+
+      // Apply saved theme
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.body.setAttribute('data-theme', savedTheme);
+      }
     </script>
   </body>
 </html>

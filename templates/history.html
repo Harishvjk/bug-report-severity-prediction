@@ -1,85 +1,170 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>Bug History</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bug History - Bug Prediction System</title>
     <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐞</text></svg>"
+    />
   </head>
   <body>
-    <div class="container">
-      <h1>📚 Bug Report History</h1>
-      <div class="panel history-panel">
+    <div class="container history-container">
+      <header class="header">
+        <h1>📚 Bug Report History</h1>
+        <p>Review and manage your saved bug predictions</p>
+      </header>
+
+      <div class="panel">
         <div class="history-header">
-          <h2>Saved Reports</h2>
-          <button type="button" id="clear-history" class="btn small">
-            Clear history
+          <div class="history-search">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search bug reports..."
+            />
+          </div>
+          <button type="button" id="clear-history" class="btn secondary">
+            🗑️ Clear All History
           </button>
         </div>
-        <div id="history-list" class="history-list"></div>
-        <div class="history-actions">
-          <a href="/" class="btn">Back to Bug Form</a>
+
+        <div id="history-list" class="history-list">
+          <!-- History items will be populated by JavaScript -->
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="/" class="btn">🔄 Back to Bug Form</a>
         </div>
       </div>
     </div>
 
     <script>
-      function renderHistory() {
-        const history = JSON.parse(
-          localStorage.getItem("bugReportHistory") || "[]",
-        );
+      let allHistory = [];
+
+      function renderHistory(filteredHistory = null) {
+        const history =
+          filteredHistory ||
+          JSON.parse(localStorage.getItem("bugHistory") || "[]");
         const list = document.getElementById("history-list");
-        list.innerHTML = "";
 
         if (!history.length) {
-          list.innerHTML =
-            '<p class="muted">No bug history found. Submit a bug on the main page to save it here.</p>';
+          list.innerHTML = `
+            <div class="text-center mt-3">
+              <p class="muted">No bug reports found. Submit a bug on the main page to save it here.</p>
+            </div>
+          `;
           return;
         }
 
-        history.forEach((item, index) => {
-          const card = document.createElement("div");
-          card.className = "history-item";
-          card.innerHTML = `
-            <div class="history-title">
-              <strong>${item.title}</strong>
-              <span class="history-severity">${item.severity || "Pending"}</span>
+        list.innerHTML = history
+          .map(
+            (item, index) => `
+          <div class="history-item">
+            <div class="history-item-header">
+              <div class="history-item-title">${item.title}</div>
+              <div class="history-item-actions">
+                <button type="button" class="btn secondary" onclick="loadReport(${index})">
+                  📝 Load
+                </button>
+                <button type="button" class="btn secondary" onclick="deleteReport(${index})">
+                  🗑️ Delete
+                </button>
+              </div>
             </div>
-            <p>${item.description}</p>
-            <div class="history-meta">
-              <span>${item.bug_category || "Unknown category"}</span>
-              <span>${item.tech_stack} · ${item.environment}</span>
-              <span>${new Date(item.submitted_at).toLocaleString()}</span>
+
+            <div class="history-item-meta">
+              <div><strong>Severity:</strong> <span class="severity-badge ${item.severity?.toLowerCase() || "unknown"}">${item.severity || "Unknown"}</span></div>
+              <div><strong>Category:</strong> ${item.bug_category || "Unknown"}</div>
+              <div><strong>Tech Stack:</strong> ${item.tech_stack || "Unknown"}</div>
+              <div><strong>Environment:</strong> ${item.environment || "Unknown"}</div>
+              <div><strong>Role:</strong> ${item.developer_role || "Unknown"}</div>
+              <div><strong>Date:</strong> ${item.timestamp ? new Date(item.timestamp).toLocaleString() : "Unknown"}</div>
             </div>
-          `;
 
-          const controls = document.createElement("div");
-          controls.className = "history-meta";
+            <div class="mt-2">
+              <strong>Description:</strong>
+              <p class="muted">${item.description || "No description"}</p>
+            </div>
+          </div>
+        `,
+          )
+          .join("");
+      }
 
-          const loadButton = document.createElement("button");
-          loadButton.type = "button";
-          loadButton.className = "btn small";
-          loadButton.textContent = "Load into form";
-          loadButton.addEventListener("click", () => {
-            localStorage.setItem("selectedBugReport", JSON.stringify(item));
-            window.location.href = "/";
-          });
+      function loadReport(index) {
+        const history = JSON.parse(localStorage.getItem("bugHistory") || "[]");
+        const report = history[index];
+        if (report) {
+          localStorage.setItem("selectedBugReport", JSON.stringify(report));
+          window.location.href = "/";
+        }
+      }
 
-          controls.appendChild(loadButton);
-          card.appendChild(controls);
-          list.appendChild(card);
-        });
+      function deleteReport(index) {
+        if (!confirm("Delete this bug report from history?")) return;
+
+        const history = JSON.parse(localStorage.getItem("bugHistory") || "[]");
+        history.splice(index, 1);
+        localStorage.setItem("bugHistory", JSON.stringify(history));
+        renderHistory();
       }
 
       function clearHistory() {
-        if (!confirm("Clear all saved bug report history?")) return;
-        localStorage.removeItem("bugReportHistory");
+        if (
+          !confirm(
+            "Clear all saved bug report history? This action cannot be undone.",
+          )
+        )
+          return;
+        localStorage.removeItem("bugHistory");
         renderHistory();
       }
 
+      function filterHistory(query) {
+        if (!query.trim()) {
+          renderHistory();
+          return;
+        }
+
+        const history = JSON.parse(localStorage.getItem("bugHistory") || "[]");
+        const filtered = history.filter(
+          (item) =>
+            item.title?.toLowerCase().includes(query.toLowerCase()) ||
+            item.description?.toLowerCase().includes(query.toLowerCase()) ||
+            item.severity?.toLowerCase().includes(query.toLowerCase()) ||
+            item.bug_category?.toLowerCase().includes(query.toLowerCase()) ||
+            item.tech_stack?.toLowerCase().includes(query.toLowerCase()),
+        );
+        renderHistory(filtered);
+      }
+
+      // Apply saved theme
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        document.body.setAttribute("data-theme", savedTheme);
+      }
+
+      // Load selected report if redirected from history
+      const selectedReport = localStorage.getItem("selectedBugReport");
+      if (selectedReport) {
+        localStorage.removeItem("selectedBugReport");
+        // This will be handled by the main page
+      }
+
       window.addEventListener("DOMContentLoaded", () => {
+        renderHistory();
+
         document
           .getElementById("clear-history")
           .addEventListener("click", clearHistory);
-        renderHistory();
+
+        const searchInput = document.getElementById("search-input");
+        searchInput.addEventListener("input", (e) => {
+          filterHistory(e.target.value);
+        });
       });
     </script>
   </body>
