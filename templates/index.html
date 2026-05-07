@@ -22,6 +22,16 @@
         </button>
       </div>
 
+      <div class="panel quick-input-panel">
+        <h2>⚡ Quick Bug Input</h2>
+        <p>Paste a short description and click <strong>Auto Fill Form</strong>. The form will try to detect domain, tech stack, environment, role, root cause, and error code automatically.</p>
+        <textarea id="quick_input" placeholder="e.g. Production Node.js API bug causing 401 errors for Backend Developer" rows="3"></textarea>
+        <div class="quick-actions">
+          <button type="button" class="btn secondary" id="auto-fill-button">Auto Fill Form</button>
+          <button type="button" class="btn secondary" id="clear-quick-input">Clear Input</button>
+        </div>
+      </div>
+
       <div class="form-container">
         <h2>🐛 Report a Bug</h2>
         <form action="/predict" method="post">
@@ -208,6 +218,68 @@
         document.getElementById('root_cause').value = data.root_cause;
       }
 
+      function normalizeText(value) {
+        return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+      }
+
+      const quickOptions = {
+        bug_domain: ['Backend Systems', 'Cloud', 'Data', 'DevOps', 'Mobile', 'Web Development'],
+        tech_stack: ['AWS', 'Angular', 'Azure', 'Django', 'Docker', 'Flask', 'GCP', 'Kubernetes', 'Laravel', 'MongoDB', 'MySQL', 'Node.js', 'PostgreSQL', 'React', 'Spring Boot', 'Vue'],
+        environment: ['Development', 'Production', 'Staging'],
+        developer_role: ['Backend Developer', 'Cloud Engineer', 'Data Engineer', 'DevOps Engineer', 'Frontend Developer', 'Full-Stack Developer', 'Mobile Developer', 'QA Engineer', 'Security Engineer'],
+        root_cause: ['Misconfiguration or logic issue related to api bug', 'Misconfiguration or logic issue related to authentication bug', 'Misconfiguration or logic issue related to authorization bug', 'Misconfiguration or logic issue related to backend logic bug', 'Misconfiguration or logic issue related to ci/cd bug', 'Misconfiguration or logic issue related to cloud configuration bug', 'Misconfiguration or logic issue related to concurrency bug', 'Misconfiguration or logic issue related to database bug', 'Misconfiguration or logic issue related to deployment bug', 'Misconfiguration or logic issue related to frontend routing bug', 'Misconfiguration or logic issue related to logging bug', 'Misconfiguration or logic issue related to memory leak', 'Misconfiguration or logic issue related to monitoring bug', 'Misconfiguration or logic issue related to performance bug', 'Misconfiguration or logic issue related to security vulnerability', 'Misconfiguration or logic issue related to ui bug'],
+      };
+
+      function findQuickMatch(text, options) {
+        const normalized = normalizeText(text);
+        const exactMatch = options.find(option => normalized.includes(normalizeText(option)));
+        if (exactMatch) return exactMatch;
+        return options.find(option => {
+          return normalizeText(option)
+            .split(' ')
+            .some(token => token.length > 2 && normalized.includes(token));
+        });
+      }
+
+      function parseQuickInput(text) {
+        const normalized = normalizeText(text);
+        const errorCodeMatch = text.match(/\b(2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/);
+        return {
+          title: text.split(/[\.\n]/)[0].trim() || 'Quick bug report',
+          description: text.trim(),
+          explanation: text.trim(),
+          error_code: errorCodeMatch ? parseInt(errorCodeMatch[1], 10) : '',
+          bug_domain: findQuickMatch(normalized, quickOptions.bug_domain) || '',
+          tech_stack: findQuickMatch(normalized, quickOptions.tech_stack) || '',
+          environment: findQuickMatch(normalized, quickOptions.environment) || '',
+          developer_role: findQuickMatch(normalized, quickOptions.developer_role) || '',
+          root_cause: findQuickMatch(normalized, quickOptions.root_cause) || '',
+        };
+      }
+
+      function autoFillFromQuickInput() {
+        const quickInput = document.getElementById('quick_input').value;
+        if (!quickInput.trim()) {
+          alert('Please paste a quick bug summary first.');
+          return;
+        }
+
+        const parsed = parseQuickInput(quickInput);
+        document.getElementById('title').value = parsed.title;
+        document.getElementById('description').value = parsed.description;
+        document.getElementById('explanation').value = parsed.explanation;
+        document.getElementById('error_code').value = parsed.error_code;
+        document.getElementById('bug_domain').value = parsed.bug_domain;
+        document.getElementById('tech_stack').value = parsed.tech_stack;
+        document.getElementById('environment').value = parsed.environment;
+        document.getElementById('developer_role').value = parsed.developer_role;
+        document.getElementById('root_cause').value = parsed.root_cause;
+      }
+
+      function clearQuickInput() {
+        document.getElementById('quick_input').value = '';
+      }
+
       // Add click handlers to sample buttons
       document.querySelectorAll('.sample-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -215,6 +287,9 @@
           fillForm(sample);
         });
       });
+
+      document.getElementById('auto-fill-button').addEventListener('click', autoFillFromQuickInput);
+      document.getElementById('clear-quick-input').addEventListener('click', clearQuickInput);
 
       // History management
       function renderHistory() {
