@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container result">
+      <h1>🔍 Prediction Result</h1>
+
+      <div class="card">
+        <h3>Bug Category</h3>
+        <p>{{ bug_category }}</p>
+      </div>
+
+      <div class="card">
+        <h3>Severity</h3>
+        <p>{{ severity }}</p>
+      </div>
+
+      <div class="card">
+        <h3>Suggested Fix</h3>
+        <p>{{ suggested_fix }}</p>
+      </div>
+
+      <a href="/" class="btn">Predict Another Bug</a>
+      <a href="/history" class="btn secondary">View Bug History</a>
+    </div>
+    <script>
+      (function() {
+          const storageKey = 'bugReportHistory';
+          const currentReport = {{ report | tojson | safe }};
+          const history = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+          history.unshift(currentReport);
+          if (history.length > 50) {
+              history.length = 50;
+          }
+          localStorage.setItem(storageKey, JSON.stringify(history));
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,132 @@
+body {
+  background: linear-gradient(120deg, #1e3c72, #2a5298);
+  font-family: Arial;
+  color: white;
+}
+
+.container {
+  width: 60%;
+  margin: auto;
+  margin-top: 40px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 30px;
+  border-radius: 10px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #00c6ff;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.small {
+  width: auto;
+  padding: 8px 14px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 18px;
+  margin-bottom: 22px;
+  border-radius: 10px;
+}
+
+.sample-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sample-btn {
+  flex: 1 1 45%;
+  min-width: 140px;
+  background: #22c1c3;
+}
+
+.history-panel {
+  margin-bottom: 30px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-list {
+  margin-top: 14px;
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.history-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.history-severity {
+  background: rgba(0, 198, 255, 0.16);
+  color: #00f0ff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.history-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: #d2e9ff;
+}
+
+.muted {
+  color: #dcdcdc;
+}
+
+.btn.secondary {
+  background: #ffce00;
+  color: black;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 8px;
+}
+
+.btn {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  padding: 10px;
+  background: #00c6ff;
+  color: black;
+  text-decoration: none;
+}

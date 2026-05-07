@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Bug History</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>📚 Bug Report History</h1>
+      <div class="panel history-panel">
+        <div class="history-header">
+          <h2>Saved Reports</h2>
+          <button type="button" id="clear-history" class="btn small">
+            Clear history
+          </button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+        <div class="history-actions">
+          <a href="/" class="btn">Back to Bug Form</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function renderHistory() {
+        const history = JSON.parse(
+          localStorage.getItem("bugReportHistory") || "[]",
+        );
+        const list = document.getElementById("history-list");
+        list.innerHTML = "";
+
+        if (!history.length) {
+          list.innerHTML =
+            '<p class="muted">No bug history found. Submit a bug on the main page to save it here.</p>';
+          return;
+        }
+
+        history.forEach((item, index) => {
+          const card = document.createElement("div");
+          card.className = "history-item";
+          card.innerHTML = `
+            <div class="history-title">
+              <strong>${item.title}</strong>
+              <span class="history-severity">${item.severity || "Pending"}</span>
+            </div>
+            <p>${item.description}</p>
+            <div class="history-meta">
+              <span>${item.bug_category || "Unknown category"}</span>
+              <span>${item.tech_stack} · ${item.environment}</span>
+              <span>${new Date(item.submitted_at).toLocaleString()}</span>
+            </div>
+          `;
+
+          const controls = document.createElement("div");
+          controls.className = "history-meta";
+
+          const loadButton = document.createElement("button");
+          loadButton.type = "button";
+          loadButton.className = "btn small";
+          loadButton.textContent = "Load into form";
+          loadButton.addEventListener("click", () => {
+            localStorage.setItem("selectedBugReport", JSON.stringify(item));
+            window.location.href = "/";
+          });
+
+          controls.appendChild(loadButton);
+          card.appendChild(controls);
+          list.appendChild(card);
+        });
+      }
+
+      function clearHistory() {
+        if (!confirm("Clear all saved bug report history?")) return;
+        localStorage.removeItem("bugReportHistory");
+        renderHistory();
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("clear-history")
+          .addEventListener("click", clearHistory);
+        renderHistory();
+      });
+    </script>
+  </body>
+</html>

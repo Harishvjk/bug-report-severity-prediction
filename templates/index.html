@@ -1,0 +1,347 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Bug Prediction System</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>🐞 Bug Prediction System</h1>
+      <div class="top-actions">
+        <a href="/history" class="btn secondary">View Full History Page</a>
+        <button type="button" id="clear-history-top" class="btn secondary">Clear History</button>
+      </div>
+
+      <form action="/predict" method="post">
+        <input type="text" name="title" placeholder="Bug Title" required />
+
+        <textarea
+          name="description"
+          placeholder="Bug Description"
+          required
+        ></textarea>
+
+        <textarea
+          name="explanation"
+          placeholder="Explanation / Logs"
+        ></textarea>
+
+        <input
+          type="number"
+          name="error_code"
+          placeholder="Error Code"
+          required
+        />
+
+        <!-- BUG DOMAIN -->
+        <select name="bug_domain" required>
+          <option value="">Select Bug Domain</option>
+          {% for val in bug_domains %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- TECH STACK -->
+        <select name="tech_stack" required>
+          <option value="">Select Tech Stack</option>
+          {% for val in tech_stacks %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- ENVIRONMENT -->
+        <select name="environment" required>
+          <option value="">Select Environment</option>
+          {% for val in environments %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- DEVELOPER ROLE -->
+        <select name="developer_role" required>
+          <option value="">Select Developer Role</option>
+          {% for val in developer_roles %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- ROOT CAUSE -->
+        <select name="root_cause" required>
+          <option value="">Select Root Cause</option>
+          {% for val in root_causes %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit">Predict Bug</button>
+      </form>
+
+      <div class="panel">
+        <h2>Sample bug templates</h2>
+        <div class="sample-buttons">
+          <button type="button" class="sample-btn" data-sample="low">
+            Low severity sample
+          </button>
+          <button type="button" class="sample-btn" data-sample="medium">
+            Medium severity sample
+          </button>
+          <button type="button" class="sample-btn" data-sample="high">
+            High severity sample
+          </button>
+          <button type="button" class="sample-btn" data-sample="critical">
+            Critical severity sample
+          </button>
+        </div>
+        <p class="note">
+          Click a button to autofill the form with an example bug report.
+        </p>
+      </div>
+
+      <div class="panel history-panel">
+        <div class="history-header">
+          <h2>Bug history</h2>
+          <button type="button" id="clear-history" class="btn small">
+            Clear history
+          </button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </div>
+
+        <textarea
+          name="description"
+          placeholder="Bug Description"
+          required
+        ></textarea>
+
+        <textarea
+          name="explanation"
+          placeholder="Explanation / Logs"
+        ></textarea>
+
+        <input
+          type="number"
+          name="error_code"
+          placeholder="Error Code"
+          required
+        />
+
+        <!-- BUG DOMAIN -->
+        <select name="bug_domain" required>
+          <option value="">Select Bug Domain</option>
+          {% for val in bug_domains %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- TECH STACK -->
+        <select name="tech_stack" required>
+          <option value="">Select Tech Stack</option>
+          {% for val in tech_stacks %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- ENVIRONMENT -->
+        <select name="environment" required>
+          <option value="">Select Environment</option>
+          {% for val in environments %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- DEVELOPER ROLE -->
+        <select name="developer_role" required>
+          <option value="">Select Developer Role</option>
+          {% for val in developer_roles %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- ROOT CAUSE -->
+        <select name="root_cause" required>
+          <option value="">Select Root Cause</option>
+          {% for val in root_causes %}
+          <option value="{{ val }}">{{ val }}</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit">Predict Bug</button>
+      </form>
+    </div>
+
+    <script>
+      const sampleReports = {
+        low: {
+          title: "Frontend form submit stuck on loading",
+          description:
+            "The React form never completes submission and the page stays on the loading spinner.",
+          explanation:
+            "Browser console shows TypeError: Cannot read properties of undefined (reading 'submit').",
+          error_code: 400,
+          bug_domain: "Web Development",
+          tech_stack: "React",
+          environment: "Staging",
+          developer_role: "Frontend Developer",
+          root_cause:
+            "Misconfiguration or logic issue related to frontend routing bug",
+        },
+        medium: {
+          title: "Auth token denied despite valid credentials",
+          description:
+            "API rejects a valid token and returns 401 during auth middleware validation.",
+          explanation:
+            "Auth service log: token validation failed for token issued 5 minutes ago.",
+          error_code: 401,
+          bug_domain: "Cloud",
+          tech_stack: "AWS",
+          environment: "Development",
+          developer_role: "Security Engineer",
+          root_cause:
+            "Misconfiguration or logic issue related to authentication bug",
+        },
+        high: {
+          title: "Search service slows under peak load",
+          description:
+            "Search queries take much longer during peak traffic, causing user-facing timeouts and degraded experience.",
+          explanation:
+            "Server logs show elevated latency and intermittent 503 responses during high traffic spikes.",
+          error_code: 503,
+          bug_domain: "Backend Systems",
+          tech_stack: "PostgreSQL",
+          environment: "Production",
+          developer_role: "Backend Developer",
+          root_cause: "Misconfiguration or logic issue related to performance bug",
+        },
+        critical: {
+          title: "Kubernetes deployment crashes on startup",
+          description:
+            "New service pod enters CrashLoopBackOff immediately after deployment.",
+          explanation:
+            "Pod log shows missing environment variable and container exit code 1.",
+          error_code: 1,
+          bug_domain: "DevOps",
+          tech_stack: "Kubernetes",
+          environment: "Production",
+          developer_role: "DevOps Engineer",
+          root_cause:
+            "Misconfiguration or logic issue related to deployment bug",
+        },
+      };
+
+      function fillReportInForm(report) {
+        if (!report) return;
+
+        document.querySelector('input[name="title"]').value = report.title;
+        document.querySelector('textarea[name="description"]').value =
+          report.description;
+        document.querySelector('textarea[name="explanation"]').value =
+          report.explanation;
+        document.querySelector('input[name="error_code"]').value =
+          report.error_code;
+        document.querySelector('select[name="bug_domain"]').value =
+          report.bug_domain;
+        document.querySelector('select[name="tech_stack"]').value =
+          report.tech_stack;
+        document.querySelector('select[name="environment"]').value =
+          report.environment;
+        document.querySelector('select[name="developer_role"]').value =
+          report.developer_role;
+        document.querySelector('select[name="root_cause"]').value =
+          report.root_cause;
+      }
+
+      function fillForm(sample) {
+        fillReportInForm(sampleReports[sample]);
+      }
+
+      function loadSelectedReport() {
+        const selected = localStorage.getItem("selectedBugReport");
+        if (!selected) return;
+        const report = JSON.parse(selected);
+        localStorage.removeItem("selectedBugReport");
+        fillReportInForm(report);
+      }
+
+      function renderHistory() {
+        const history = JSON.parse(
+          localStorage.getItem("bugReportHistory") || "[]",
+        );
+        const list = document.getElementById("history-list");
+        list.innerHTML = "";
+
+        if (!history.length) {
+          list.innerHTML =
+            '<p class="muted">No past reports yet. Submit a bug to save it here.</p>';
+          return;
+        }
+
+        history.forEach((item, index) => {
+          const card = document.createElement("div");
+          card.className = "history-item";
+          card.innerHTML = `
+            <div class="history-title">
+                <strong>${item.title}</strong>
+                <span class="history-severity">${item.severity || "Pending"}</span>
+            </div>
+            <p>${item.description}</p>
+            <div class="history-meta">
+                <span>${item.bug_category || "Unknown category"}</span>
+                <span>${item.tech_stack} · ${item.environment}</span>
+                <span>${new Date(item.submitted_at).toLocaleString()}</span>
+            </div>
+            <button type="button" class="btn small" data-load="${index}">Load</button>
+        `;
+          list.appendChild(card);
+        });
+
+        document.querySelectorAll("[data-load]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const idx = parseInt(button.getAttribute("data-load"), 10);
+            const item = history[idx];
+            if (!item) return;
+            document.querySelector('input[name="title"]').value = item.title;
+            document.querySelector('textarea[name="description"]').value =
+              item.description;
+            document.querySelector('textarea[name="explanation"]').value =
+              item.explanation;
+            document.querySelector('input[name="error_code"]').value =
+              item.error_code;
+            document.querySelector('select[name="bug_domain"]').value =
+              item.bug_domain;
+            document.querySelector('select[name="tech_stack"]').value =
+              item.tech_stack;
+            document.querySelector('select[name="environment"]').value =
+              item.environment;
+            document.querySelector('select[name="developer_role"]').value =
+              item.developer_role;
+            document.querySelector('select[name="root_cause"]').value =
+              item.root_cause;
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+        });
+      }
+
+      function clearHistory() {
+        if (!confirm("Clear all saved bug report history?")) return;
+        localStorage.removeItem("bugReportHistory");
+        renderHistory();
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".sample-btn").forEach((button) => {
+          button.addEventListener("click", () =>
+            fillForm(button.dataset.sample),
+          );
+        });
+        document
+          .getElementById("clear-history")
+          .addEventListener("click", clearHistory);
+        document
+          .getElementById("clear-history-top")
+          .addEventListener("click", clearHistory);
+        loadSelectedReport();
+        renderHistory();
+      });
+    </script>
+  </body>
+</html>
