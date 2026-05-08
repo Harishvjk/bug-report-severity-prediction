@@ -1,3 +1,10 @@
+"""Generate a synthetic bug report dataset with controlled severity signal.
+
+This script creates a balanced synthetic dataset for bug category, severity, and
+suggested fix prediction. Severity is correlated with category, environment,
+and error codes to make the dataset meaningful for model training.
+"""
+
 import random
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -117,6 +124,7 @@ SEVERITY_GENERATORS = {
 
 
 def generate_row(index: int, severity: str) -> dict:
+    """Create one synthetic bug report row with controlled severity correlation."""
     category = random.choice(SEVERITY_GENERATORS[severity]['categories'])
     domain = random.choice(BUG_DOMAINS)
     tech = random.choice(TECH_STACKS)
@@ -124,6 +132,7 @@ def generate_row(index: int, severity: str) -> dict:
     role = random.choice(DEVELOPER_ROLES)
     error_code = random.choice(SEVERITY_GENERATORS[severity]['error_codes'])
 
+    # Add a small amount of label noise to make the dataset more realistic.
     if random.random() < 0.08:
         severity = random.choice(SEVERITIES)
 
@@ -155,14 +164,19 @@ def generate_row(index: int, severity: str) -> dict:
 
 
 def main():
+    """Generate the full synthetic dataset and save it to disk."""
     random.seed(42)
     rows = []
     per_class = 12500
     index = 1
+
+    # Generate a controlled number of rows for each severity level.
     for severity in SEVERITIES:
         for _ in range(per_class):
             rows.append(generate_row(index, severity))
             index += 1
+
+    # Shuffle the dataset to avoid ordering by severity.
     random.shuffle(rows)
     df = pd.DataFrame(rows)
     df.to_csv(OUTPUT_PATH, index=False)

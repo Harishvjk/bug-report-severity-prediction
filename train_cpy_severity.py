@@ -1,3 +1,9 @@
+"""Train and evaluate a severity-only classifier on the synthetic dataset copy.
+
+This script builds a lightweight classification pipeline for severity prediction
+using TF-IDF text features plus numeric and categorical fields.
+"""
+
 import pandas as pd
 from pathlib import Path
 from sklearn.compose import ColumnTransformer
@@ -13,6 +19,7 @@ DATA_PATH = BASE_DIR / 'bug_dataset_50k_cpy.csv'
 
 
 def load_data(path: Path) -> pd.DataFrame:
+    """Load the dataset and create date-derived features for the model."""
     df = pd.read_csv(path)
     df['created_at'] = pd.to_datetime(df['created_at'])
     df['year'] = df['created_at'].dt.year
@@ -22,9 +29,10 @@ def load_data(path: Path) -> pd.DataFrame:
 
 
 def build_pipeline() -> Pipeline:
+    """Create the preprocessing and classifier pipeline for severity prediction."""
     preprocessor = ColumnTransformer(
         transformers=[
-            ('text', TfidfVectorizer(max_features=5000, stop_words='english', ngram_range=(1,2)),
+            ('text', TfidfVectorizer(max_features=5000, stop_words='english', ngram_range=(1, 2)),
              'combined_text'),
             ('num', StandardScaler(), ['error_code', 'year', 'month', 'day']),
             ('cat', OneHotEncoder(sparse_output=False, handle_unknown='ignore'),
@@ -32,26 +40,42 @@ def build_pipeline() -> Pipeline:
         ],
         remainder='drop',
     )
+
     return Pipeline([
         ('preprocessor', preprocessor),
         ('to_dense', FunctionTransformer(lambda X: X.toarray() if hasattr(X, 'toarray') else X, accept_sparse=True)),
-        ('clf', HistGradientBoostingClassifier(max_iter=200, random_state=42))
+        ('clf', HistGradientBoostingClassifier(max_iter=200, random_state=42)),
     ])
 
 
 def main():
+    """Load data, train the severity model, and print evaluation results."""
     df = load_data(DATA_PATH)
-    df['combined_text'] = df['title'].fillna('') + ' ' + df['description'].fillna('') + ' ' + df['explanation'].fillna('')
 
-    X = df[['combined_text', 'error_code', 'year', 'month', 'day', 'bug_domain', 'tech_stack', 'environment', 'developer_role', 'bug_category']]
+    # Combine text fields into a single feature for severity modeling.
+    df['combined_text'] = (
+        df['title'].fillna('') + ' ' +
+        df['description'].fillna('') + ' ' +
+        df['explanation'].fillna('')
+    )
+
+    X = df[[
+        'combined_text', 'error_code', 'year', 'month', 'day',
+        'bug_domain', 'tech_stack', 'environment', 'developer_role', 'bug_category'
+    ]]
     y = df['severity']
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    # Use stratified split to preserve severity class balance.
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
     clf = build_pipeline()
     clf.fit(X_train, y_train)
 
     y_pred = clf.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
+
     print('Severity accuracy on cpy dataset:', acc)
     print('\nClassification report:')
     print(classification_report(y_test, y_pred, digits=4))
